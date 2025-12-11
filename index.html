@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تبریک روز مادر</title>
+    <!-- Google Font: Vazirmatn -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #fff4f0 50%, #ffe8f5 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+            perspective: 1500px;
+        }
+        
+        /* Initial Button Screen */
+        .start-screen {
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+            z-index: 100;
+        }
+        
+        .start-screen.hidden {
+            display: none;
+        }
+        
+        .start-title {
+            font-size: clamp(2rem, 6vw, 3rem);
+            color: #d63384;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(214, 51, 132, 0.2);
+        }
+        
+        .start-subtitle {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            color: #ff6b9d;
+            margin-bottom: 40px;
+        }
+        
+        .open-btn {
+            background: linear-gradient(135deg, #ff6b9d, #d63384);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            font-family: 'Vazirmatn', sans-serif;
+            font-weight: 700;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(214, 51, 132, 0.4);
+            transition: all 0.3s ease;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .open-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(214, 51, 132, 0.5);
+        }
+        
+        .open-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+        
+        /* Card Container */
+        .card-wrapper {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 700px;
+            height: 80vh;
+            max-height: 600px;
+            display: none;
+            transform-style: preserve-3d;
+        }
+        
+        .card-wrapper.active {
+            display: block;
+        }
+        
+        /* Envelope/Card */
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+        
+        /* Card Front (Closed) */
+        .card-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b9d, #d63384);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(214, 51, 132, 0.4);
+            transform-origin: left center;
+            transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            backface-visibility: hidden;
+            z-index: 2;
+        }
+        
+        .card-front.opening {
+            transform: rotateY(-180deg);
+        }
+        
+        .card-front-content {
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .card-front h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-front p {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            opacity: 0.95;
+        }
+        
+        .envelope-icon {
+            font-size: clamp(4rem, 10vw, 6rem);
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        /* Card Back (Content) */
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(214, 51, 132, 0.3);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 1s ease-out 0.8s;
+            overflow-y: auto;
+            padding: 30px;
+        }
+        
+        .card-back.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ff6b9d;
+            position: absolute;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+        
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Content Inside Card */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            animation: fadeInDown 1s ease-out 1.5s both;
+        }
+        
+        .header h1 {
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            color: #d63384;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(214, 51, 132, 0.2);
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            color: #ff6b9d;
+            font-weight: 300;
+        }
+        
+        .flower-section {
+            text-align: center;
+            margin-bottom: 25px;
+            animation: fadeInUp 1s ease-out 1.7s both;
+        }
+        
+        .flower-emoji {
+            font-size: clamp(6rem, 15vw, 9rem);
+            display: block;
+            filter: drop-shadow(0 5px 15px rgba(255, 107, 157, 0.3));
+            animation: floatFlower 3s ease-in-out infinite;
+        }
+        
+        .message-section {
+            background: linear-gradient(135deg, #fff5f9, #ffe8f5);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #ffd6e9;
+            animation: fadeInUp 1s ease-out 1.9s both;
+        }
+        
+        .message-section h2 {
+            color: #d63384;
+            font-size: clamp(1.2rem, 4vw, 1.6rem);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        /* EDITABLE MESSAGE */
+        .message-text {
+            color: #7d4466;
+            font-size: clamp(0.95rem, 2.8vw, 1.1rem);
+            line-height: 1.8;
+            font-weight: 400;
+            white-space: pre-line;
+        }
+        
+        .music-status {
+            text-align: center;
+            color: #ff6b9d;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            animation: fadeIn 1s ease-out 2.1s both;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        
+        @keyframes floatFlower {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(5deg);
+            }
+        }
+        
+        /* Responsive */
+        @media (min-width: 768px) {
+            .card-back {
+                padding: 40px;
+            }
+            
+            .message-section {
+                padding: 25px;
+            }
+        }
+        
+        @media (max-height: 700px) {
+            .card-wrapper {
+                height: 90vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Start Screen -->
+    <div class="start-screen" id="startScreen">
+        <h1 class="start-title">💐 کارت پستال روز مادر 💐</h1>
+        <p class="start-subtitle">برای مادر عزیزم</p>
+        <button class="open-btn" id="openBtn">
+            🎁 باز کردن کارت
+        </button>
+    </div>
+    
+    <!-- Card Wrapper -->
+    <div class="card-wrapper" id="cardWrapper">
+        <div class="envelope">
+            <!-- Front of Card (Closed) -->
+            <div class="card-front" id="cardFront">
+                <div class="card-front-content">
+                    <div class="envelope-icon">💌</div>
+                    <h2>با عشق</h2>
+                    <p>به مادر عزیزم</p>
+                </div>
+            </div>
+            
+            <!-- Back of Card (Content) -->
+            <div class="card-back" id="cardBack">
+                <div class="header">
+                    <h1>💐 روز مادر مبارک 💐</h1>
+                    <p>به بهترین مادر دنیا</p>
+                </div>
+                
+                <div class="flower-section">
+                    <span class="flower-emoji">🌹</span>
+                </div>
+                
+                <div class="message-section">
+                    <h2>همه کس کیارش 💖</h2>
+                    <!-- EDITABLE MESSAGE - Change text below -->
+                    <p class="message-text">مامانِ عزیزم،
+تو از اولین روزهای کودکی‌ام، هم مادر بودی هم پدر، هم تکیه‌گاه بودی هم آرامش خانه‌مان. هر قدمی که امروز در زندگی‌ام برمی‌دارم، ریشه در زحمت‌ها، بی‌خوابی‌ها و دل‌سوزی‌های تو دارد. من بزرگ شدم، اما هیچ‌وقت لحظه‌ای را فراموش نکردم که با دستان خسته‌ات آینده‌ام را ساختی.
+
+تو همیشه با هر سختی جنگیدی؛ بی‌صدا، محکم، مثل کوهی که پشت بچه‌اش می‌ایستد و نمی‌گذارد خم شود. می‌دانم روزهایی بود که خسته بودی، دلگیر بودی، اما هیچ‌وقت نذاشتی من کمبود عشق، امنیت یا امید را حس کنم. تو معنای واقعی فداکاری و قدرتی.
+
+امروز روز مادر است، اما برای من هر روز، روز توست. با تمام وجودم می‌گویم: ممنونم که بودی، هستی و همیشه خواهی بود. دعا می‌کنم لبخندت هیچ‌وقت از صورتت نیفته و خدا دلت را پر از آرامش و شادی کند. مادرم… تو بهترین اتفاق زندگی منی.
+تو نور زندگی منی.
+هر لحظه کنارت یک هدیه است.
+دوستت دارم تا ابد! 🌸</p>
+                </div>
+                
+                <div class="music-status" id="musicStatus">
+                    🎵 در حال پخش موزیک...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Audio Element - PUT SONG URL HERE -->
+    <audio id="audio" preload="auto">
+        <source src="./Reza NikFarjam - Mother (UpMusic).mp3" type="audio/mpeg">
+        <!-- Example: <source src="https://example.com/mother-song.mp3" type="audio/mpeg"> -->
+    </audio>
+    
+    <script>
+        const openBtn = document.getElementById('openBtn');
+        const startScreen = document.getElementById('startScreen');
+        const cardWrapper = document.getElementById('cardWrapper');
+        const cardFront = document.getElementById('cardFront');
+        const cardBack = document.getElementById('cardBack');
+        const audio = document.getElementById('audio');
+        const musicStatus = document.getElementById('musicStatus');
+        
+        // Create confetti
+        function createConfetti() {
+            const colors = ['#ff6b9d', '#d63384', '#ffc0cb', '#ff1493', '#ffb6c1'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+        
+        // Open card animation
+        openBtn.addEventListener('click', function() {
+            // Hide start screen
+            startScreen.classList.add('hidden');
+            
+            // Show card wrapper
+            cardWrapper.classList.add('active');
+            
+            // Start opening animation
+            setTimeout(() => {
+                cardFront.classList.add('opening');
+                createConfetti();
+            }, 100);
+            
+            // Show card content
+            setTimeout(() => {
+                cardBack.classList.add('show');
+            }, 800);
+            
+            // Play music after animation starts
+            setTimeout(() => {
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                    }).catch(error => {
+                        console.error('Audio play error:', error);
+                    });
+                }
+            }, 1500);
+        });
+        
+        // Audio ended
+        audio.addEventListener('ended', function() {
+        });
+        
+        // Audio error
+        audio.addEventListener('error', function() {
+        });
+    </script>
+</body>
+</html>
